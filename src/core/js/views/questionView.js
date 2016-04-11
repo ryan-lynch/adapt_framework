@@ -227,6 +227,9 @@ define(function(require) {
             // This is a blank method given to the question
             this.storeUserAnswer();
 
+            // Store the users input somewhere accessible
+            this.storeUserInput();
+
             // Used to set question as correct:true/false
             // Calls isCorrect which is blank for the question
             // to fill out and return a boolean
@@ -295,6 +298,28 @@ define(function(require) {
         // This is important for returning or showing the users answer
         // This should preserve the state of the users answers
         storeUserAnswer: function() {},
+
+        storeUserInput: function() {
+            this.model.set({
+                _userInput: ''
+            });
+
+            var answer;
+            //@TODO consider GMCQ, match, open text input. This may not be the right place for this.
+            // if component is multi-choice question then get the selected item and answer text to _userInput.
+            if (this.model.get('_component') == "mcq") {
+                if (answer = this.model.attributes._selectedItems[0]) {
+                    this.model.set('_userInput', answer.text);
+                }
+            }
+
+            // if component is of textInput type then get the answer text and save to _userInput.
+            if (this.model.get('_component') == "textinput") {
+                if (answer = this.model.attributes._items[0].userAnswer) {
+                    this.model.set('_userInput', answer);
+                }
+            }
+        },
 
         // Sets _isCorrect:true/false based upon isCorrect method below
         markQuestion: function() {
